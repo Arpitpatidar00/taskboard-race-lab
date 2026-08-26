@@ -16,7 +16,7 @@ import {
   type CreateTaskFormValues,
   type UpdateTaskFormValues,
   type Task,
-} from "@/types/task";
+} from "@/features/tasks/types/task";
 import { Loader2 } from "lucide-react";
 
 // ─── Create form ─────────────────────────────────────────────────

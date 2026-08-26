@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import type { TaskStatus as TStatus, TaskPriority as TPriority } from "@/types/task";
+import type { TaskStatus as TStatus, TaskPriority as TPriority } from "@/features/tasks/types/task";
 
 const statusLabels: Record<TStatus, string> = {
   todo: "To Do",

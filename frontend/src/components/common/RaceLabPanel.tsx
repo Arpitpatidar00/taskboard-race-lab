@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { UnreliableConfig } from "@/types/task";
+import type { UnreliableConfig } from "@/features/tasks/types/task";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

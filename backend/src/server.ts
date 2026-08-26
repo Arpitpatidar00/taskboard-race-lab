@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -5,6 +6,7 @@ import path from "path";
 import taskRoutes from "./routes/taskRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { simulateUnreliableApi } from "./middleware/unreliableApi.js";
+import { logger } from "./infrastructure/logger/index.js";
 
 // Load environment variables from the root .env file
 dotenv.config({ path: path.resolve(process.cwd(), "../.env") });
@@ -24,17 +26,15 @@ app.use("/api/tasks", taskRoutes);
 
 // Health check
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+  res.json({ status: "ok" });
 });
 
-// ─── Error handler ───────────────────────────────────────────────
+// Error handling middleware must be last
 app.use(errorHandler);
 
-// ─── Start ───────────────────────────────────────────────────────
+// ─── Start Server ────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(
-    `\n🚀 Taskboard Race Lab backend running on http://localhost:${PORT}`,
-  );
+  logger.info(`Server running on http://localhost:${PORT}`);
   console.log(`   API: http://localhost:${PORT}/api/tasks`);
   console.log(`   Health: http://localhost:${PORT}/api/health\n`);
 });

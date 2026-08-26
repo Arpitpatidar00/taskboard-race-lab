@@ -1,13 +1,15 @@
 import { useMutation } from "@tanstack/react-query";
-import { createTask, updateTask } from "@/api/taskApi";
-import type { CreateTaskData, UpdateTaskData } from "@/api/taskApi";
-import type { Task, TaskListResponse } from "@/types/task";
+import { createTask, updateTask } from "@/features/tasks/api/taskApi";
+import type { CreateTaskData, UpdateTaskData } from "@/features/tasks/api/taskApi";
+import type { Task, TaskListResponse } from "@/features/tasks/types/task";
 import { queryClient } from "@/lib/queryClient";
 import { generateId } from "@/lib/utils";
-import { ApiRequestError } from "@/api/apiClient";
+import { ApiRequestError } from "@/lib/apiClient";
+import { taskKeys } from "../api/queryKeys";
 
-// ─── Create task mutation ────────────────────────────────────────
-
+/**
+ * Hook for creating a task
+ */
 export function useCreateTask() {
   return useMutation({
     mutationFn: (data: CreateTaskData) => {
@@ -17,12 +19,9 @@ export function useCreateTask() {
       );
       return createTask(data, idempotencyKey);
     },
-    onSuccess: (result) => {
-      console.log(
-        `[MUTATION] create success id=${result.data.id} version=${result.data.version}`
-      );
-      // Invalidate all task list queries to pick up the new task
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    onSuccess: () => {
+      // Refresh list to get the finalized state
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
   });
 }
@@ -58,8 +57,8 @@ export function useUpdateTask() {
     // ─── Optimistic update ─────────────────────────────────────
     onMutate: async (variables) => {
       // Cancel any outgoing queries for this task and task lists
-      await queryClient.cancelQueries({ queryKey: ["task", variables.taskId] });
-      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+      await queryClient.cancelQueries({ queryKey: taskKeys.detail(variables.taskId) });
+      await queryClient.cancelQueries({ queryKey: taskKeys.lists() });
 
       // Snapshot previous state for rollback
       const previousTask = queryClient.getQueryData<{ data: Task }>([
@@ -70,7 +69,7 @@ export function useUpdateTask() {
       // Snapshot all task list queries
       const previousLists: [readonly unknown[], TaskListResponse | undefined][] = [];
       const listQueries = queryClient.getQueriesData<TaskListResponse>({
-        queryKey: ["tasks"],
+        queryKey: taskKeys.lists(),
       });
       for (const [key, data] of listQueries) {
         previousLists.push([key, data]);
@@ -78,7 +77,7 @@ export function useUpdateTask() {
 
       // Optimistically update the single task cache
       if (previousTask) {
-        queryClient.setQueryData(["task", variables.taskId], {
+        queryClient.setQueryData(taskKeys.detail(variables.taskId), {
           data: {
             ...previousTask.data,
             ...variables.data,
@@ -120,7 +119,7 @@ export function useUpdateTask() {
         // Restore the single task cache
         if (context.previousTask) {
           queryClient.setQueryData(
-            ["task", variables.taskId],
+            taskKeys.detail(variables.taskId),
             context.previousTask
           );
         }
@@ -148,8 +147,8 @@ export function useUpdateTask() {
     // ─── Reconcile on settled ──────────────────────────────────
     onSettled: (_data, _error, variables) => {
       // Always refetch to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ["task", variables.taskId] });
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: taskKeys.detail(variables.taskId) });
+      queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
     },
   });
 }

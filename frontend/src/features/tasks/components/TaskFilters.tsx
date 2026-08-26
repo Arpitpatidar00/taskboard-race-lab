@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { TaskStatus, TaskPriority } from "@/types/task";
+import type { TaskStatus, TaskPriority } from "@/features/tasks/types/task";
 
 type TaskFiltersProps = {
   status: TaskStatus | undefined;

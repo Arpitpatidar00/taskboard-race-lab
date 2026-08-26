@@ -1,10 +1,10 @@
-import { apiRequest } from "./apiClient";
+import { apiRequest } from "@/lib/apiClient";
 import type {
   TaskListResponse,
   TaskResponse,
   TaskFilters,
   UnreliableConfig,
-} from "@/types/task";
+} from "@/features/tasks/types/task";
 
 // ─── Task queries ────────────────────────────────────────────────
 

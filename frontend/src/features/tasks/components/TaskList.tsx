@@ -1,4 +1,4 @@
-import type { Task } from "@/types/task";
+import type { Task } from "@/features/tasks/types/task";
 import { TaskRow } from "./TaskRow";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Inbox, SearchX, FilterX, Loader2 } from "lucide-react";

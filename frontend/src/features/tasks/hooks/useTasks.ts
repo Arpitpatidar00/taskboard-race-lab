@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTasks } from "@/api/taskApi";
-import type { TaskFilters, Task, TaskListResponse } from "@/types/task";
+import { getTasks } from "@/features/tasks/api/taskApi";
+import type { TaskFilters, Task, TaskListResponse } from "@/features/tasks/types/task";
 import { queryClient } from "@/lib/queryClient";
+import { taskKeys } from "../api/queryKeys";
 
 /**
  * Query key factory for task list.
  */
 export function tasksQueryKey(filters?: TaskFilters) {
-  return ["tasks", filters ?? {}] as const;
+  return taskKeys.list(filters ?? {});
 }
 
 /**

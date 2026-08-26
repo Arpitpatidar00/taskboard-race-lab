@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTask } from "@/api/taskApi";
+import { getTask } from "@/features/tasks/api/taskApi";
+import { taskKeys } from "../api/queryKeys";
 
 /**
  * Fetch a single task by ID.
@@ -7,7 +8,7 @@ import { getTask } from "@/api/taskApi";
  */
 export function useTask(taskId: string | null) {
   return useQuery({
-    queryKey: ["task", taskId],
+    queryKey: taskKeys.detail(taskId!),
     queryFn: async ({ signal }) => {
       if (!taskId) throw new Error("No task ID");
       return getTask(taskId, signal);

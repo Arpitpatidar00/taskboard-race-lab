@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useTasks } from "@/hooks/useTasks";
-import { useCreateTask } from "@/hooks/useTaskMutations";
+import { useTasks } from "@/features/tasks/hooks/useTasks";
+import { useCreateTask } from "@/features/tasks/hooks/useTaskMutations";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-import { TaskSearch } from "@/components/tasks/TaskSearch";
-import { TaskFilters } from "@/components/tasks/TaskFilters";
-import { TaskList } from "@/components/tasks/TaskList";
-import { TaskDetailDrawer } from "@/components/tasks/TaskDetailDrawer";
-import { CreateTaskForm } from "@/components/tasks/TaskForm";
+import { TaskSearch } from "@/features/tasks/components/TaskSearch";
+import { TaskFilters } from "@/features/tasks/components/TaskFilters";
+import { TaskList } from "@/features/tasks/components/TaskList";
+import { TaskDetailDrawer } from "@/features/tasks/components/TaskDetailDrawer";
+import { CreateTaskForm } from "@/features/tasks/components/TaskForm";
 import { RaceLabPanel } from "@/components/common/RaceLabPanel";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import type { Task, TaskStatus, TaskPriority, CreateTaskFormValues } from "@/types/task";
+import type { Task, TaskStatus, TaskPriority, CreateTaskFormValues } from "@/features/tasks/types/task";
 import { Plus, Beaker } from "lucide-react";
 
 export function TaskBoardPage() {

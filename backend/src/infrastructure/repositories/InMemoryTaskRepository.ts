@@ -1,18 +1,16 @@
+import { injectable } from "tsyringe";
 import { v4 as uuidv4 } from "uuid";
-import type { Task, TaskQuery, CreateTaskInput } from "../types/task.js";
+import type { ITaskRepository } from "../../domain/repositories/ITaskRepository.js";
+import type { Task, TaskQuery, CreateTaskInput } from "../../types/task.js";
 
-/**
- * In-memory task repository backed by a Map<string, Task>.
- * The backend owns version numbering — clients never set it.
- */
-class TaskRepository {
+@injectable()
+export class InMemoryTaskRepository implements ITaskRepository {
   private tasks: Map<string, Task> = new Map();
 
   constructor() {
     this.seed();
   }
 
-  /** Seed with sample tasks for development. */
   private seed(): void {
     const sampleTasks: Omit<Task, "id" | "version" | "updatedAt">[] = [
       { title: "Set up project scaffolding", status: "done", priority: "high", assignee: "Arpit" },
@@ -43,8 +41,7 @@ class TaskRepository {
     }
   }
 
-  /** Return all tasks, optionally filtered. */
-  findAll(query?: TaskQuery): Task[] {
+  public findAll(query?: TaskQuery): Task[] {
     let results = Array.from(this.tasks.values());
 
     if (query?.search) {
@@ -67,13 +64,11 @@ class TaskRepository {
     return results;
   }
 
-  /** Find a single task by ID. */
-  findById(id: string): Task | undefined {
+  public findById(id: string): Task | undefined {
     return this.tasks.get(id);
   }
 
-  /** Create a new task. Backend generates id, version=1, updatedAt. */
-  create(input: CreateTaskInput): Task {
+  public create(input: CreateTaskInput): Task {
     const id = uuidv4();
     const task: Task = {
       id,
@@ -88,13 +83,7 @@ class TaskRepository {
     return task;
   }
 
-  /**
-   * Update an existing task in-place.
-   * Increments version and sets updatedAt.
-   * Returns the updated task.
-   * Does NOT check version — that's the service's job.
-   */
-  update(id: string, data: Partial<Pick<Task, "title" | "status" | "priority" | "assignee">>): Task | undefined {
+  public update(id: string, data: Partial<Pick<Task, "title" | "status" | "priority" | "assignee">>): Task | undefined {
     const existing = this.tasks.get(id);
     if (!existing) return undefined;
 
@@ -108,6 +97,3 @@ class TaskRepository {
     return updated;
   }
 }
-
-// Singleton
-export const taskRepository = new TaskRepository();

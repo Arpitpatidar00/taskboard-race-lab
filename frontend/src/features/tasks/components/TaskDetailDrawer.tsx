@@ -1,12 +1,12 @@
 import { useState } from "react";
-import type { Task, UpdateTaskFormValues } from "@/types/task";
-import { useTask } from "@/hooks/useTask";
-import { useUpdateTask } from "@/hooks/useTaskMutations";
+import type { Task, UpdateTaskFormValues } from "@/features/tasks/types/task";
+import { useTask } from "@/features/tasks/hooks/useTask";
+import { useUpdateTask } from "@/features/tasks/hooks/useTaskMutations";
 import { EditTaskForm } from "./TaskForm";
 import { TaskStatusBadge, TaskPriorityBadge } from "./TaskStatusBadge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
-import { ApiRequestError } from "@/api/apiClient";
+import { ApiRequestError } from "@/lib/apiClient";
 import {
   X,
   Pencil,
