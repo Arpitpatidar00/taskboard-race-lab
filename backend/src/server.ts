@@ -1,8 +1,13 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
 import taskRoutes from "./routes/taskRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { simulateUnreliableApi } from "./middleware/unreliableApi.js";
+
+// Load environment variables from the root .env file
+dotenv.config({ path: path.resolve(process.cwd(), "../.env") });
 
 const app = express();
 const PORT = parseInt(process.env.PORT ?? "8000", 10);
