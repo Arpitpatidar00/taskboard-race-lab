@@ -42,15 +42,16 @@ apiClient.interceptors.response.use(
 // Helper wrapper for the old apiRequest API
 export async function apiRequest<T>(
   endpoint: string,
-  options: { method?: string; body?: any; headers?: Record<string, string> } = {}
+  options: { method?: string; body?: any; headers?: Record<string, string>; signal?: AbortSignal } = {}
 ): Promise<T> {
-  const { method = "GET", body, headers } = options;
+  const { method = "GET", body, headers, signal } = options;
 
   const response = await apiClient.request<T>({
     url: endpoint,
     method,
     data: body,
     headers,
+    signal,
   });
 
   return response.data;

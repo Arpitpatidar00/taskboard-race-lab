@@ -135,7 +135,7 @@ export function useUpdateTask() {
       }
 
       // Check for version conflict
-      if (error instanceof ApiRequestError && error.statusCode === 409) {
+      if (error instanceof ApiRequestError && error.status === 409) {
         console.log(
           `[MUTATION] conflict detected for task=${variables.taskId}`
         );

@@ -46,7 +46,7 @@ export async function createTask(
   return apiRequest<TaskResponse>("/tasks", {
     method: "POST",
     body: data,
-    idempotencyKey,
+    headers: { "Idempotency-Key": idempotencyKey },
   });
 }
 
@@ -66,7 +66,7 @@ export async function updateTask(
   return apiRequest<TaskResponse>(`/tasks/${id}`, {
     method: "PATCH",
     body: data,
-    idempotencyKey,
+    headers: { "Idempotency-Key": idempotencyKey },
   });
 }
 

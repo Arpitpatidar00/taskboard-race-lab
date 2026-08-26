@@ -58,8 +58,8 @@ export function TaskDetailDrawer({ taskId, onClose }: TaskDetailDrawerProps) {
           setMutationError(null);
         },
         onError: (err) => {
-          if (err instanceof ApiRequestError && err.statusCode === 409) {
-            const serverTask = err.body.error.currentTask;
+          if (err instanceof ApiRequestError && err.status === 409) {
+            const serverTask = err.currentTask;
             if (serverTask) {
               setConflictTask(serverTask as Task);
             }
@@ -246,8 +246,8 @@ export function TaskDetailDrawer({ taskId, onClose }: TaskDetailDrawerProps) {
                       },
                       {
                         onError: (err) => {
-                          if (err instanceof ApiRequestError && err.statusCode === 409) {
-                            const serverTask = err.body.error.currentTask;
+                          if (err instanceof ApiRequestError && err.status === 409) {
+                            const serverTask = err.currentTask;
                             if (serverTask) setConflictTask(serverTask as Task);
                             setMutationError("This task was modified elsewhere.");
                           } else {
