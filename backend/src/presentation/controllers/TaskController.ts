@@ -5,7 +5,11 @@ import { UpdateTaskUseCase } from "../../application/use-cases/UpdateTaskUseCase
 import { ListTasksUseCase } from "../../application/use-cases/ListTasksUseCase.js";
 import { GetTaskUseCase } from "../../application/use-cases/GetTaskUseCase.js";
 import type { IIdempotencyService } from "../../application/services/IIdempotencyService.js";
-import { CreateTaskSchema, UpdateTaskSchema, TaskQuerySchema } from "../../types/task.js";
+import {
+  CreateTaskSchema,
+  UpdateTaskSchema,
+  TaskQuerySchema,
+} from "../../types/task.js";
 import { logger } from "../../infrastructure/logger/index.js";
 
 @injectable()
@@ -15,17 +19,27 @@ export class TaskController {
     @inject(UpdateTaskUseCase) private updateTaskUseCase: UpdateTaskUseCase,
     @inject(ListTasksUseCase) private listTasksUseCase: ListTasksUseCase,
     @inject(GetTaskUseCase) private getTaskUseCase: GetTaskUseCase,
-    @inject("IIdempotencyService") private idempotencyService: IIdempotencyService
+    @inject("IIdempotencyService")
+    private idempotencyService: IIdempotencyService,
   ) {}
 
-  public listTasks = (req: Request, res: Response, next: NextFunction): void => {
+  public listTasks = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): void => {
     try {
       const query = TaskQuerySchema.parse(req.query);
       const result = this.listTasksUseCase.execute(query);
 
       logger.info(
-        { search: query.search, status: query.status, priority: query.priority, total: result.total },
-        "[TASKS] GET /api/tasks"
+        {
+          search: query.search,
+          status: query.status,
+          priority: query.priority,
+          total: result.total,
+        },
+        "[TASKS] GET /api/tasks",
       );
 
       res.json(result);
@@ -36,20 +50,29 @@ export class TaskController {
 
   public getTask = (req: Request, res: Response, next: NextFunction): void => {
     try {
-      const task = this.getTaskUseCase.execute(req.params.id);
+      const task = this.getTaskUseCase.execute(req.params.id.toString());
       res.json({ data: task });
     } catch (err) {
       next(err);
     }
   };
 
-  public createTask = (req: Request, res: Response, next: NextFunction): void => {
+  public createTask = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): void => {
     try {
-      const idempotencyKey = req.headers["idempotency-key"] as string | undefined;
+      const idempotencyKey = req.headers["idempotency-key"] as
+        | string
+        | undefined;
 
       const cached = this.idempotencyService.getResult(idempotencyKey);
       if (cached) {
-        logger.info({ idempotencyKey }, "[IDEMPOTENCY] Returning cached result");
+        logger.info(
+          { idempotencyKey },
+          "[IDEMPOTENCY] Returning cached result",
+        );
         res.status(cached.statusCode).json(cached.body);
         return;
       }
@@ -59,7 +82,7 @@ export class TaskController {
 
       logger.info(
         { id: task.id, title: task.title, version: task.version },
-        "[TASKS] POST /api/tasks"
+        "[TASKS] POST /api/tasks",
       );
 
       const responseBody = { data: task };
@@ -71,28 +94,40 @@ export class TaskController {
     }
   };
 
-  public updateTask = (req: Request, res: Response, next: NextFunction): void => {
+  public updateTask = (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): void => {
     try {
-      const idempotencyKey = req.headers["idempotency-key"] as string | undefined;
+      const idempotencyKey = req.headers["idempotency-key"] as
+        | string
+        | undefined;
 
       const cached = this.idempotencyService.getResult(idempotencyKey);
       if (cached) {
-        logger.info({ idempotencyKey }, "[IDEMPOTENCY] Returning cached result");
+        logger.info(
+          { idempotencyKey },
+          "[IDEMPOTENCY] Returning cached result",
+        );
         res.status(cached.statusCode).json(cached.body);
         return;
       }
 
       const input = UpdateTaskSchema.parse(req.body);
-      const task = this.updateTaskUseCase.execute(req.params.id, input);
+      const task = this.updateTaskUseCase.execute(
+        req.params.id.toString(),
+        input,
+      );
 
       logger.info(
         { id: task.id, newVersion: task.version },
-        "[MUTATION] success"
+        "[MUTATION] success",
       );
 
       const responseBody = { data: task };
       this.idempotencyService.storeResult(idempotencyKey, 200, responseBody);
-      
+
       res.json(responseBody);
     } catch (err) {
       next(err);
