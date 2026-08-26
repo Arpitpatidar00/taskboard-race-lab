@@ -11,10 +11,10 @@ import { logger } from "../../infrastructure/logger/index.js";
 @injectable()
 export class TaskController {
   constructor(
-    private createTaskUseCase: CreateTaskUseCase,
-    private updateTaskUseCase: UpdateTaskUseCase,
-    private listTasksUseCase: ListTasksUseCase,
-    private getTaskUseCase: GetTaskUseCase,
+    @inject(CreateTaskUseCase) private createTaskUseCase: CreateTaskUseCase,
+    @inject(UpdateTaskUseCase) private updateTaskUseCase: UpdateTaskUseCase,
+    @inject(ListTasksUseCase) private listTasksUseCase: ListTasksUseCase,
+    @inject(GetTaskUseCase) private getTaskUseCase: GetTaskUseCase,
     @inject("IIdempotencyService") private idempotencyService: IIdempotencyService
   ) {}
 
